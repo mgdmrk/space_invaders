@@ -68,15 +68,15 @@ class Enemy():
 
     def move(self, speed, direction):
         self.direction = direction
-        while self.x + self.enemy_image.get_width() >= WIDTH:
-            self.x += speed*direction
+        #while self.x + self.enemy_image.get_width() >= WIDTH:
+            #self.x += speed*direction
         self.y += speed
 
-        while self.x <0:
-            self.x -= speed * direction
+        #while self.x <0:
+            #self.x -= speed * direction
+            # right-left movements to change
 
-
-        #self.x -= speed
+     
 
 class Blocker():
     """Blocker behinde which player can hide from enemies."""
@@ -198,10 +198,6 @@ def main():
         for enemy in enemies[:]:
             enemy.move(enemy_speed, enemy_direction)
 
-#  [inicjalizacja bibliotek zewnętrznych]
-   # [tworzenie obiektów odpowiednich klas]
-   # [wywołanie funkcji lub metody wprawiającej te obiekty w ruch]
-   # [sprzątanie]
     draw_background()
 def main_menu():
     run = True
