@@ -27,7 +27,10 @@ class Colors:
 BLOCKERS_POSITION = 450
 
 class SpaceShip():
-    """Player ship."""
+    """Player's ship."""
+
+    COOLDOWN = 30
+
     def __init__(self, x, y, health = 100):
         self.x = x
         self.y = y
@@ -35,23 +38,50 @@ class SpaceShip():
         self.ship_image = assets.Assets.SPACE_SHIP
         self.bullet_image = assets.Assets.SHIP_BULLET
         self.bullets = []
-        # self.rect = self.image.get_rect(topleft=(375, 540))
         self.speed = 5
         self.mask = pygame.mask.from_surface(self.ship_image)
+        self.cool_down_counter = 0
 
     def draw(self, screen):
         screen.blit(self.ship_image, (self.x, self.y))
+        for bullet in self.bullets:
+            bullet.draw(screen)
+
+    def move_bullets(self, speed, objects):
+        self.cooldown()
+        for bullet in self.bullets:
+            bullet.move(vel)
+            if bullet.off_screen(HEIGHT):
+                self.bullets.remove(bullet)
+            else:
+                for object in objects:
+                    if bullet.collision(object):
+                        objects.remove(object)
+                        if bullet in self.bullets:
+                            self.bullets.remove(bullet)
+    def shoot(self):
+        if self.cool_down_counter == 0:
+            bullet = Bullet(self.x, self.y, self.bullet_image)
+            self.bullets.append(bullet)
+            self.cool_down_counter = 1
+
+    def cooldown(self):
+        if self.cool_down_counter >= self.COOLDOWN:
+            self.cool_down_counter = 0
+        elif self.cool_down_counter > 0:
+            self.cool_down_counter += 1
 
     def get_width(self):
         return self.ship_image.get_width()
 
 class Enemy():
-    """Player enemies."""
+    """Creats player's enemies."""
 
     ENEMIES_MAP = {
                     "pink": (assets.Assets.ENEMY1),
                     "blue": (assets.Assets.ENEMY2)
                     }
+    COOLDOWN = 30
 
     def __init__(self, x, y, color, health = 100):
         self.x = x
@@ -62,21 +92,48 @@ class Enemy():
         self.bullets = []
         # self.rect = self.image.get_rect(topleft=(375, 540))
         self.mask = pygame.mask.from_surface(self.enemy_image)
+        self.cool_down_counter = 0
 
     def draw(self, screen):
         screen.blit(self.enemy_image, (self.x, self.y))
 
     def move(self, speed, direction):
         self.direction = direction
-        #while self.x + self.enemy_image.get_width() >= WIDTH:
-            #self.x += speed*direction
+        while self.x + self.enemy_image.get_width() >= WIDTH:
+            self.x += speed*direction
         self.y += speed
 
-        #while self.x <0:
-            #self.x -= speed * direction
-            # right-left movements to change
+        while self.x <0:
+            self.x -= speed * direction
 
-     
+    def move_bullets(self, speed, object):
+        self.cooldown()
+        for bullet in self.bullets:
+            bullet.move(speed)
+            if bullet.off_screen(HEIGHT):
+                self.bullets.remove(bullet)
+            elif bullet.collision(object):
+                object.health -= 10
+                self.bullets.remove(bullet)
+
+    def shoot(self):
+        if self.cool_down_counter == 0:
+            bullet = Bullet(self.x-20, self.y, self.bullet_image)
+            self.bullets.append(bullet)
+            self.cool_down_counter = 1
+
+    def cooldown(self):
+        if self.cool_down_counter >= self.COOLDOWN:
+            self.cool_down_counter = 0
+        elif self.cool_down_counter > 0:
+            self.cool_down_counter += 1
+
+
+    def get_width(self):
+        return self.enemy_image.get_width()
+
+    def get_height(self):
+        return self.enemy_image.get_height()
 
 class Blocker():
     """Blocker behinde which player can hide from enemies."""
@@ -96,25 +153,30 @@ class Blocker():
         screen.blit(self.image, (self.x, self.y))
 
 class Bullet:
-    def __init__(self, x, y, img):
+    """Player ship and enemies can hit each other with Bullet object."""
+    def __init__(self, x, y, image):
         self.x = x
         self.y = y
-        self.img = img
-        self.mask = pygame.mask.from_surface(self.img)
+        self.image = image
+        self.mask = pygame.mask.from_surface(self.image)
 
     def draw(self, window):
-        window.blit(self.img, (self.x, self.y))
+        window.blit(self.image, (self.x, self.y))
 
-    def move(self, vel):
-        self.y += vel
+    def move(self, speed):
+        self.y += speed
 
     def off_screen(self, height):
         return not(self.y <= height and self.y >= 0)
 
-    def collision(self, obj):
-        return collide(self, obj)
+    def collision(self, object):
+        return collide(self, object)
 
-
+def collide(object1, object2):
+    """Checks if objects have collided."""
+    offset_x = object2.x - object1.x
+    offset_y = object2.y - object1.y
+    return object1.mask.overlap(object2.mask, (offset_x, offset_y)) != None
 
 def main():
     running = True
@@ -129,9 +191,11 @@ def main():
     enemy_speed = 1
     enemy_direction = 1
 
-    blocker1 = Blocker(100, Colors.LILAC, 100, 450)
+    bullet_speed = 5
+
+    blocker1 = Blocker(100, Colors.PURPLE, 100, 450)
     blocker2 = Blocker(100, Colors.PURPLE, 350, 450)
-    blocker3 = Blocker(100, Colors.LILAC, 600, 450)
+    blocker3 = Blocker(100, Colors.PURPLE, 600, 450)
 
     lost = False
     lost_count = 0
@@ -157,7 +221,7 @@ def main():
 
         if lost:
             lost_label = FONT.render("GAME OVER", 1, Colors.PURPLE)
-            WIN.blit(lost_label, (WIDTH/2 - lost_label.get_width()/2, 350))
+            SCREEN.blit(lost_label, (WIDTH/2 - lost_label.get_width()/2, 350))
 
         pygame.display.update()
 
@@ -194,11 +258,23 @@ def main():
             player.x -= player.speed
         if keys[pygame.K_RIGHT] and player.x + player.speed + player.get_width() < WIDTH:
             player.x += player.speed
+        if keys[pygame.K_SPACE]:
+            player.shoot()
 
         for enemy in enemies[:]:
             enemy.move(enemy_speed, enemy_direction)
+            enemy.move_bullets(bullet_speed, player)
 
-    draw_background()
+            if random.randrange(0, 2*60) == 1:
+                enemy.shoot()
+
+            if collide(enemy, player):
+                player.health -= 10
+                enemies.remove(enemy)
+            elif enemy.y + enemy.get_height() > HEIGHT:
+                lives -= 1
+                enemies.remove(enemy)
+
 def main_menu():
     run = True
     while run:
@@ -211,7 +287,7 @@ def main_menu():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
-            if event.type == pygame.MOUSEBUTTONDOWN :
+            if event.type == pygame.MOUSEBUTTONDOWN:
                 main()
     pygame.quit()
 
