@@ -50,7 +50,7 @@ class SpaceShip():
     def move_bullets(self, speed, objects):
         self.cooldown()
         for bullet in self.bullets:
-            bullet.move(vel)
+            bullet.move(speed)
             if bullet.off_screen(HEIGHT):
                 self.bullets.remove(bullet)
             else:
