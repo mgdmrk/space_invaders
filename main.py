@@ -1,15 +1,13 @@
-import os
-import time
 import random
 import pygame
 import assets
+import time
 
 pygame.init()
 assets.Assets.load()
 #screen
-WIDTH, HEIGHT = 800, 600
+WIDTH, HEIGHT = 800, 600 #display
 SCREEN = pygame.display.set_mode((WIDTH, HEIGHT))
-# ICON = pygame.image.load("assets/images/icon.png")
 pygame.display.set_caption("Space Invaders")
 pygame.display.set_icon(assets.Assets.ICON)
 FONT = assets.Assets.FONT
@@ -25,6 +23,26 @@ class Colors:
     BLUE = (39,93,133)
 
 BLOCKERS_POSITION = 450
+
+class Bullet:
+    """Player ship and enemies can hit each other with Bullet object."""
+    def __init__(self, x, y, image):
+        self.x = x
+        self.y = y
+        self.image = image
+        self.mask = pygame.mask.from_surface(self.image)
+
+    def draw(self, window):
+        window.blit(self.image, (self.x, self.y))
+
+    def move(self, speed):
+        self.y += speed
+
+    def off_screen(self, height):
+        return not(self.y <= height and self.y >= 0)
+
+    def collision(self, object):
+        return collide(self, object)
 
 class SpaceShip():
     """Player's ship."""
@@ -90,21 +108,14 @@ class Enemy():
         self.enemy_image = self.ENEMIES_MAP[color]
         self.bullet_image = assets.Assets.ENEMY_BULLET
         self.bullets = []
-        # self.rect = self.image.get_rect(topleft=(375, 540))
         self.mask = pygame.mask.from_surface(self.enemy_image)
         self.cool_down_counter = 0
 
     def draw(self, screen):
         screen.blit(self.enemy_image, (self.x, self.y))
 
-    def move(self, speed, direction):
-        self.direction = direction
-        while self.x + self.enemy_image.get_width() >= WIDTH:
-            self.x += speed*direction
+    def move(self, speed):
         self.y += speed
-
-        while self.x <0:
-            self.x -= speed * direction
 
     def move_bullets(self, speed, object):
         self.cooldown()
@@ -183,19 +194,20 @@ def main():
     FPS = 60
     score = 0
     lives = 3
-    clock = pygame.time.Clock()
+
     player = SpaceShip(450, 500)
 
     enemies = []
     wave_length = 5
     enemy_speed = 1
-    enemy_direction = 1
 
     bullet_speed = 5
 
     blocker1 = Blocker(100, Colors.PURPLE, 100, 450)
     blocker2 = Blocker(100, Colors.PURPLE, 350, 450)
     blocker3 = Blocker(100, Colors.PURPLE, 600, 450)
+
+    clock = pygame.time.Clock()
 
     lost = False
     lost_count = 0
@@ -226,6 +238,7 @@ def main():
         pygame.display.update()
 
     while running:
+
         clock.tick(FPS)
         draw_background()
 
@@ -274,6 +287,8 @@ def main():
             elif enemy.y + enemy.get_height() > HEIGHT:
                 lives -= 1
                 enemies.remove(enemy)
+
+        player.move_bullets(-bullet_speed, enemies)
 
 def main_menu():
     run = True

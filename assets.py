@@ -7,7 +7,7 @@ class Assets:
     @staticmethod
     def load():
         """Loading resources from drive."""
-        Assets.SPACE_SHIP = pygame.transform.scale((pygame.image.load('assets/images/my_ship.png')), (50,50))
+        Assets.SPACE_SHIP = pygame.transform.scale((pygame.image.load('assets/images/space_ship.png')), (50,50))
         Assets.ENEMY1 = pygame.transform.scale((pygame.image.load('assets/images/enemy1.png')), (50,50))
         Assets.ENEMY2 = pygame.transform.scale((pygame.image.load('assets/images/enemy2.png')), (50,50))
         Assets.ENEMY_BULLET = pygame.transform.scale((pygame.image.load('assets/images/enemy_bullet.png')), (5,5))
