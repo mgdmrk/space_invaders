@@ -53,6 +53,7 @@ class SpaceShip():
         self.x = x
         self.y = y
         self.health = health
+        self.max_health = health
         self.ship_image = assets.Assets.SPACE_SHIP
         self.bullet_image = assets.Assets.SHIP_BULLET
         self.bullets = []
@@ -64,6 +65,11 @@ class SpaceShip():
         screen.blit(self.ship_image, (self.x, self.y))
         for bullet in self.bullets:
             bullet.draw(screen)
+        self.healthbar(screen)
+
+    def healthbar(self, screen):
+        pygame.draw.rect(screen, (255,0,0), (self.x, self.y + self.ship_image.get_height() + 10, self.ship_image.get_width(), 10))
+        pygame.draw.rect(screen, (0,255,0), (self.x, self.y + self.ship_image.get_height() + 10, self.ship_image.get_width() * (self.health/self.max_health), 10))
 
     def move_bullets(self, speed, objects):
         self.cooldown()
@@ -92,6 +98,9 @@ class SpaceShip():
     def get_width(self):
         return self.ship_image.get_width()
 
+    def get_height(self):
+        return self.ship_img.get_height()
+
 class Enemy():
     """Creats player's enemies."""
 
@@ -113,6 +122,8 @@ class Enemy():
 
     def draw(self, screen):
         screen.blit(self.enemy_image, (self.x, self.y))
+        for bullet in self.bullets:
+            bullet.draw(screen)
 
     def move(self, speed):
         self.y += speed
@@ -163,25 +174,7 @@ class Blocker():
     def draw(self, screen):
         screen.blit(self.image, (self.x, self.y))
 
-class Bullet:
-    """Player ship and enemies can hit each other with Bullet object."""
-    def __init__(self, x, y, image):
-        self.x = x
-        self.y = y
-        self.image = image
-        self.mask = pygame.mask.from_surface(self.image)
 
-    def draw(self, window):
-        window.blit(self.image, (self.x, self.y))
-
-    def move(self, speed):
-        self.y += speed
-
-    def off_screen(self, height):
-        return not(self.y <= height and self.y >= 0)
-
-    def collision(self, object):
-        return collide(self, object)
 
 def collide(object1, object2):
     """Checks if objects have collided."""
@@ -275,7 +268,7 @@ def main():
             player.shoot()
 
         for enemy in enemies[:]:
-            enemy.move(enemy_speed, enemy_direction)
+            enemy.move(enemy_speed)
             enemy.move_bullets(bullet_speed, player)
 
             if random.randrange(0, 2*60) == 1:
