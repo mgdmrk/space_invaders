@@ -15,7 +15,9 @@ class EnemyTest(unittest.TestCase):
         self.assertEqual(self.enemy.y, 300 + 5)
 
     def test_shoot(self):
+
         self.enemy.shoot()
+
 
 
 if __name__ == '__main__':
