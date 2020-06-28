@@ -82,7 +82,7 @@ class SpaceShip():
         pygame.draw.rect(screen, (0, 255, 0), (self.x, self.y + self.ship_image.get_height() + 10,
                                                self.ship_image.get_width() * (self.health/self.max_health), 10))
 
-    def move_bullets(self, speed, objs):
+    def move_bullets(self, speed, objs, score):
         """Moving bullets of the player."""
         self.cooldown()
         for bullet in self.bullets:
@@ -94,6 +94,7 @@ class SpaceShip():
                 for obj in objs:
                     if bullet.collision(obj):
                         objs.remove(obj)
+                        score += 10
                         if bullet in self.bullets:
                             self.bullets.remove(bullet)
 
@@ -277,7 +278,7 @@ def main():
                 lives -= 1
                 enemies.remove(enemy)
 
-        player.move_bullets(-bullet_speed, enemies)
+        player.move_bullets(-bullet_speed, enemies, score)
 
 
 
