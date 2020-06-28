@@ -97,6 +97,7 @@ class SpaceShip():
                         score += 10
                         if bullet in self.bullets:
                             self.bullets.remove(bullet)
+        return score
 
 
     def shoot(self):
@@ -279,6 +280,7 @@ def main():
                 enemies.remove(enemy)
 
         player.move_bullets(-bullet_speed, enemies, score)
+        score = player.move_bullets(-bullet_speed, enemies, score)
 
 
 
