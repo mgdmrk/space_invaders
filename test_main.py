@@ -15,9 +15,12 @@ class EnemyTest(unittest.TestCase):
         self.assertEqual(self.enemy.y, 300 + 5)
 
     def test_shoot(self):
-
+        self.bullet_x =  self.enemy.x - 20
+        self.bullet_y = self.enemy.y
+        self.bullet_image = self.enemy.bullet_image
+        self.enemy.bullets.clear()
         self.enemy.shoot()
-
+        self.assertEqual(1, len(self.enemy.bullets))
 
 
 if __name__ == '__main__':
