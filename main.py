@@ -194,7 +194,7 @@ def main():
     ship_speed = 5
 
     enemies = []
-    wave_length = 5
+    wave_length = 0
     enemy_speed = 1
 
     bullet_speed = 5
@@ -212,7 +212,7 @@ def main():
         score_label = FONT.render(f"Score: {score}", 1, Colors.PINK)
 
         SCREEN.blit(lives_label, (10, 10))
-        SCREEN.blit(score_label, (WIDTH - lives_label.get_width() - 10, 10))
+        SCREEN.blit(score_label, (WIDTH - lives_label.get_width() - 100, 10))
 
         for enemy in enemies:
             enemy.draw(SCREEN)
@@ -241,7 +241,6 @@ def main():
                 continue
 
         if len(enemies) == 0:
-            score += 100
             wave_length += 5
             enemy_speed += 1
             for i in range(wave_length):
@@ -278,8 +277,9 @@ def main():
                 lives -= 1
                 enemies.remove(enemy)
 
-        if player.move_bullets(-bullet_speed, enemies):
-            score +=10
+        player.move_bullets(-bullet_speed, enemies)
+
+
 
 
 
