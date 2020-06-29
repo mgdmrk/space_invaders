@@ -56,7 +56,7 @@ class Bullet:
         return (math.hypot(obj.x-self.x, obj.y-self.y) < CONDITION_OF_COLLISION)
 
 
-class SpaceShip():
+class SpaceShip:
     """Player's ship."""
 
     COOLDOWN = 30
@@ -123,7 +123,7 @@ class SpaceShip():
     def get_height(self):
         return self.ship_image.get_height()
 
-class Enemy():
+class Enemy:
     """Creats player's enemies."""
 
     ENEMIES_MAP = {
