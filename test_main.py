@@ -22,6 +22,14 @@ class EnemyTest(unittest.TestCase):
         self.enemy.shoot()
         self.assertEqual(1, len(self.enemy.bullets))
 
+class CollideTest(unittest.TestCase):
+
+        def test_collide(self):
+            self.enemy = main.Enemy(200, 300, "pink")
+            self.ship = main.SpaceShip(200, 300)
+            self.collision = main.collide(self.enemy, self.ship)
+            self.assertTrue(self.collision)
+
 
 if __name__ == '__main__':
     unittest.main()
