@@ -31,6 +31,5 @@ class CollideTest(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    assets.Assets.load()
     unittest.main()
 

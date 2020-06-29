@@ -2,24 +2,18 @@ import random
 import math
 import pygame
 
+pygame.init()
 
-class Assets:
-    """Class is storing resources."""
-
-
-    @staticmethod
-    def load():
-        """Loading resources from drive."""
-        Assets.SPACE_SHIP = pygame.transform.scale(pygame.image.load('assets/images/space_ship.png'), (50,50))
-        Assets.ENEMY1 = pygame.transform.scale(pygame.image.load('assets/images/enemy1.png'), (50,50))
-        Assets.ENEMY2 = pygame.transform.scale(pygame.image.load('assets/images/enemy2.png'), (50,50))
-        Assets.ENEMY_BULLET = pygame.transform.scale(pygame.image.load('assets/images/enemy_bullet.png'), (5,5))
-        Assets.SHIP_BULLET = pygame.transform.scale(pygame.image.load('assets/images/ship_bullet.png'), (5,5))
-        Assets.EXPLOSION1 = pygame.image.load('assets/images/explosion1.png')
-        Assets.EXPLOSION2 = pygame.image.load('assets/images/explosion2.png')
-        Assets.FONT = pygame.font.Font('assets/font/yoster.ttf', 50)
-        Assets.BACKGROUND = pygame.transform.scale(pygame.image.load('assets/images/background.jpg'), (800, 600))
-        Assets.ICON = pygame.image.load("assets/images/icon.png")
+SPACE_SHIP = pygame.transform.scale(pygame.image.load('assets/images/space_ship.png'), (50,50))
+ENEMY1 = pygame.transform.scale(pygame.image.load('assets/images/enemy1.png'), (50,50))
+ENEMY2 = pygame.transform.scale(pygame.image.load('assets/images/enemy2.png'), (50,50))
+ENEMY_BULLET = pygame.transform.scale(pygame.image.load('assets/images/enemy_bullet.png'), (5,5))
+SHIP_BULLET = pygame.transform.scale(pygame.image.load('assets/images/ship_bullet.png'), (5,5))
+EXPLOSION1 = pygame.image.load('assets/images/explosion1.png')
+EXPLOSION2 = pygame.image.load('assets/images/explosion2.png')
+FONT = pygame.font.Font('assets/font/yoster.ttf', 50)
+BACKGROUND = pygame.transform.scale(pygame.image.load('assets/images/background.jpg'), (800, 600))
+ICON = pygame.image.load("assets/images/icon.png")
 
 class Colors:
     """Color palette."""
@@ -29,6 +23,8 @@ class Colors:
     PINK = (227, 69, 179)
     PURPLE = (162, 77, 178)
     BLUE = (39, 93, 133)
+    GREEN = (201,254,190)
+    RED = (229,89,113)
 
 WIDTH, HEIGHT = 800, 600 #display
 CONDITION_OF_COLLISION = 27
@@ -58,6 +54,8 @@ class Bullet:
     def collision(self, obj):
         """Checking if bullet has collided with enemy or player."""
         return (math.hypot(obj.x-self.x, obj.y-self.y) < CONDITION_OF_COLLISION)
+
+
 class SpaceShip():
     """Player's ship."""
 
@@ -68,11 +66,11 @@ class SpaceShip():
         self.y = y
         self.health = health
         self.max_health = health
-        self.ship_image = Assets.SPACE_SHIP
+        self.ship_image = SPACE_SHIP
         self.bullets = []
         self.mask = pygame.mask.from_surface(self.ship_image)
         self.cool_down_counter = 0
-        self.bullet_image = Assets.SHIP_BULLET
+        self.bullet_image = SHIP_BULLET
 
     def draw(self, screen):
         """ Drawing objects on the screen."""
@@ -83,9 +81,9 @@ class SpaceShip():
 
     def healthbar(self, screen):
         """Showing health of the player - when the health has ended the game is over """
-        pygame.draw.rect(screen, (255, 0, 0), (self.x, self.y + self.ship_image.get_height() + 10,
+        pygame.draw.rect(screen, Colors.RED, (self.x, self.y + self.ship_image.get_height() + 10,
                                                self.ship_image.get_width(), 10))
-        pygame.draw.rect(screen, (0, 255, 0), (self.x, self.y + self.ship_image.get_height() + 10,
+        pygame.draw.rect(screen, Colors.GREEN, (self.x, self.y + self.ship_image.get_height() + 10,
                                                self.ship_image.get_width() * (self.health/self.max_health), 10))
 
     def move_bullets(self, speed, objs, score):
@@ -129,8 +127,8 @@ class Enemy():
     """Creats player's enemies."""
 
     ENEMIES_MAP = {
-        "pink": (Assets.ENEMY1),
-        "blue": (Assets.ENEMY2)
+        "pink": (ENEMY1),
+        "blue": (ENEMY2)
     }
     COOLDOWN = 30
 
@@ -142,7 +140,7 @@ class Enemy():
         self.bullets = []
         self.mask = pygame.mask.from_surface(self.enemy_image)
         self.cool_down_counter = 0
-        self.bullet_image = Assets.ENEMY_BULLET
+        self.bullet_image = ENEMY_BULLET
 
     def draw(self, screen):
         """ Drawing objects on the screen."""
@@ -192,11 +190,12 @@ def collide(obj1, obj2):
     offset_y = obj2.y - obj1.y
     return obj1.mask.overlap(obj2.mask, (offset_x, offset_y)) is not None
 
+
 def draw_background(screen, lives, score, enemies, player, lost):
     """Drawing background of a game."""
-    screen.blit(Assets.BACKGROUND, (0, 0))
-    lives_label = Assets.FONT.render(f"Lives: {lives}", 1, Colors.COTTON_PINK)
-    score_label = Assets.FONT.render(f"Score: {score}", 1, Colors.PINK)
+    screen.blit(BACKGROUND, (0, 0))
+    lives_label = FONT.render(f"Lives: {lives}", 1, Colors.COTTON_PINK)
+    score_label = FONT.render(f"Score: {score}", 1, Colors.PINK)
 
     screen.blit(lives_label, (10, 10))
     screen.blit(score_label, (WIDTH - lives_label.get_width() - 100, 10))
@@ -207,7 +206,7 @@ def draw_background(screen, lives, score, enemies, player, lost):
     player.draw(screen)
 
     if lost:
-        lost_label = Assets.FONT.render("GAME OVER", 1, Colors.PURPLE)
+        lost_label = FONT.render("GAME OVER", 1, Colors.PURPLE)
         screen.blit(lost_label, (WIDTH/2 - lost_label.get_width()/2, 350))
 
     pygame.display.update()
@@ -233,7 +232,7 @@ def game(screen):
 
     while running:
 
-        clock.tick(frames_per_second)
+        clock.tick(FRAMES_PER_SECOND)
         draw_background(screen, lives, score, enemies, player, lost)
 
         if lives <= 0 or player.health <= 0:
@@ -241,7 +240,7 @@ def game(screen):
             lost_count += 1
 
         if lost:
-            if lost_count > frames_per_second * 3:
+            if lost_count > FRAMES_PER_SECOND * 3:
                 running = False
             else:
                 continue
@@ -288,18 +287,16 @@ def game(screen):
 
 
 def main():
-    pygame.init()
-    Assets.load()
     pygame.display.set_caption("Space Invaders")
-    pygame.display.set_icon(Assets.ICON)
+    pygame.display.set_icon(ICON)
 
     run = True
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
 
     while run:
-        screen.blit(Assets.BACKGROUND, (0, 0))
-        title_label = Assets.FONT.render("Press START to begin", 1, Colors.PURPLE)
-        start = Assets.FONT.render("START", 1, Colors.PINK)
+        screen.blit(BACKGROUND, (0, 0))
+        title_label = FONT.render("Press START to begin", 1, Colors.PURPLE)
+        start =  FONT.render("START", 1, Colors.PINK)
         screen.blit(title_label, (WIDTH/2 - title_label.get_width()/2, 250))
         screen.blit(start, (WIDTH / 2 - start.get_width()/ 2, 350))
         pygame.display.update()
