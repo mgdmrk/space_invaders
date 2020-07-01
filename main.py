@@ -3,7 +3,6 @@ import math
 import pygame
 
 
-
 class Assets:
     """Storage assets"""
 
@@ -129,17 +128,19 @@ class SpaceShip:
 
 class Enemy:
     """Creats player's enemies."""
+
+    ENEMIES_MAP = {
+        "pink": Assets.ENEMY1,
+        "blue": Assets.ENEMY2
+    }
+
     COOLDOWN = 30
 
     def __init__(self, x, y, color, health=100):
         self.x = x
         self.y = y
         self.health = health
-        self.enemies_map = {
-            "pink": Assets.ENEMY1,
-            "blue": Assets.ENEMY2
-        }
-        self.enemy_image = self.enemies_map[color]
+        self.enemy_image = self.ENEMIES_MAP[color]
         self.bullets = []
         self.mask = pygame.mask.from_surface(self.enemy_image)
         self.cool_down_counter = 0
@@ -292,11 +293,11 @@ def game(screen):
 def main():
     pygame.init()
     Assets.load()
-    screen = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption("Space Invaders")
     pygame.display.set_icon(Assets.ICON)
 
     run = True
+    screen = pygame.display.set_mode((WIDTH, HEIGHT))
 
     while run:
         screen.blit(Assets.BACKGROUND, (0, 0))
