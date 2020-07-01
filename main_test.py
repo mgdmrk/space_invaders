@@ -2,6 +2,7 @@ import unittest
 import pygame
 
 import main
+import assets
 
 class EnemyTest(unittest.TestCase):
 
