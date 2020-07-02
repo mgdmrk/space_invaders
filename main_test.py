@@ -2,7 +2,6 @@ import unittest
 import pygame
 
 import main
-import assets
 
 class EnemyTest(unittest.TestCase):
 
@@ -31,5 +30,6 @@ class CollideTest(unittest.TestCase):
 
 
 if __name__ == '__main__':
+    main.Assets.load()
     unittest.main()
 
